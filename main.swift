@@ -7,52 +7,68 @@
 
 import Foundation
 
-// Level 3
+// Level 4
 
-class Calculator {
-    var firstNumer: Double
-    var secondNumber: Double
-    
-    init(_ firstNumer: Double, _ secondNumber: Double) {
-        self.firstNumer = firstNumer
-        self.secondNumber = secondNumber
+class AbstractOperation {
+    func calculate(_ firstNumber: Double, _ secondNumber: Double) -> Double {
+        return 0
     }
-    
-    lazy var addResult = AddOperation().add(firstNumer, secondNumber);
-    lazy var subtractResult = SubtractOperation().subtract(firstNumer, secondNumber);
-    lazy var multiplyResult = MultiplyOperation().multiply(firstNumer, secondNumber);
-    lazy var divideResult = DivideOperation().divide(firstNumer, secondNumber);
 }
 
-class AddOperation {
-    func add(_ firstNumer: Double, _ secondNumber: Double) -> Double {
+class Calculator {
+    var operation: AbstractOperation?
+    
+    init(_ operation: AbstractOperation) {
+        self.operation = operation
+    }
+    
+    func setOperation(_ operation: AbstractOperation) {
+        self.operation = operation
+    }
+    
+    func calculate(_ firstNumber: Double, _ secondNumber: Double) -> Double {
+        guard let operation = self.operation else {
+            fatalError("operation is optional. Set operation.")
+        }
+        return operation.calculate(firstNumber, secondNumber)
+    }
+}
+
+class AddOperation: AbstractOperation {
+    override func calculate(_ firstNumer: Double, _ secondNumber: Double) -> Double {
         return firstNumer + secondNumber
     }
 }
 
-class SubtractOperation {
-    func subtract(_ firstNumer: Double, _ secondNumber: Double) -> Double {
+class SubtractOperation: AbstractOperation {
+    override func calculate(_ firstNumer: Double, _ secondNumber: Double) -> Double {
         return firstNumer - secondNumber
     }
 }
 
-class MultiplyOperation {
-    func multiply(_ firstNumer: Double, _ secondNumber: Double) -> Double {
+class MultiplyOperation: AbstractOperation {
+    override func calculate(_ firstNumer: Double, _ secondNumber: Double) -> Double {
         return firstNumer * secondNumber
     }
 }
 
-class DivideOperation {
-    func divide(_ firstNumer: Double, _ secondNumber: Double) -> Double {
+class DivideOperation: AbstractOperation {
+    override func calculate(_ firstNumer: Double, _ secondNumber: Double) -> Double {
         return firstNumer / secondNumber
     }
 }
 
 let firstNumber: Double = 100
 let secondNumber: Double = 20
-let calculator = Calculator(firstNumber, secondNumber)
 
-print("addResult : \(calculator.addResult)")
-print("subtractResult : \(calculator.subtractResult)")
-print("multiplyResult : \(calculator.multiplyResult)")
-print("divideResult : \(calculator.divideResult)")
+let calculator = Calculator(AddOperation())
+print("addResult : \(calculator.calculate(firstNumber, secondNumber))")
+
+calculator.setOperation(SubtractOperation())
+print("subtractResult : \(calculator.calculate(firstNumber, secondNumber))")
+
+calculator.setOperation(MultiplyOperation())
+print("multiplyResult : \(calculator.calculate(firstNumber, secondNumber))")
+
+calculator.setOperation(DivideOperation())
+print("divideResult : \(calculator.calculate(firstNumber, secondNumber))")
